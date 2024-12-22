@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-from decouple import config
 from pathlib import Path
+from decouple import config
+from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'vetty_apis.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,6 +104,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Configure rest_framework to follow API-Key Validation Globally
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework_api_key.permissions.HasAPIKey",
+    ]
+}
+
+# Login url
+LOGIN_URL = "/accounts/login/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -120,8 +131,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR/'assets',]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Customizing message tags
+MESSAGE_TAGS = {
+    message_constants.DEBUG: 'info',    # Maps DEBUG to 'info'
+    message_constants.INFO: 'info',    # Maps INFO to 'info'
+    message_constants.SUCCESS: 'success',  # Maps SUCCESS to 'success'
+    message_constants.WARNING: 'warning',  # Maps WARNING to 'warning'
+    message_constants.ERROR: 'error',  # Maps ERROR to 'error'
+}
+
