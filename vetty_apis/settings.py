@@ -104,14 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Configure rest_framework to follow API-Key Validation Globally
-REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-        "rest_framework_api_key.permissions.HasAPIKey",
-    ]
-}
-
 # Login url
 LOGIN_URL = "/accounts/login/"
 
@@ -142,10 +134,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Customizing message tags
 MESSAGE_TAGS = {
-    message_constants.DEBUG: 'info',    # Maps DEBUG to 'info'
-    message_constants.INFO: 'info',    # Maps INFO to 'info'
+    message_constants.DEBUG: 'info',       # Maps DEBUG to 'info'
+    message_constants.INFO: 'info',        # Maps INFO to 'info'
     message_constants.SUCCESS: 'success',  # Maps SUCCESS to 'success'
     message_constants.WARNING: 'warning',  # Maps WARNING to 'warning'
-    message_constants.ERROR: 'error',  # Maps ERROR to 'error'
+    message_constants.ERROR: 'error',      # Maps ERROR to 'error'
 }
 
