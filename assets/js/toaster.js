@@ -1,7 +1,7 @@
 // Initialize Notyf instance
 const notyf = new Notyf({
     duration: 3000, // Default duration for all toasts
-    position: { x: 'right', y: 'top' }, // Toast position
+    position: { x: 'center', y: 'top' }, // Toast position
     dismissible: true, // Allow users to dismiss toasts manually
 });
 
