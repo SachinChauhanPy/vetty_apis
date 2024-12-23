@@ -1,0 +1,155 @@
+{% extends 'commons/base.html' %}
+
+{% block content %}
+<!-- Navbar -->
+{% include 'commons/navbar.html' %}
+<!-- List of api keys -->
+<div class="card m-3 my-5">
+    <div class="card-header h4 clearfix">
+        <div class="card-tools float-start">
+            Your API Keys
+        </div>
+        <div class="float-end">
+            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#GenKey">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Prefix</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                {% if api_keys %}
+                    
+                    {% for api_key in api_keys %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{api_key.name}}</td>
+                            <td>{{api_key.prefix}}.xxxxxxx</td>
+                        </tr>
+                    {% endfor %}
+                        
+                {% endif %}
+                    
+            </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="GenKey" tabindex="-1" aria-labelledby="genKeyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="genKeyLabel">Create API Key</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            {% csrf_token %}
+            <label for="api_name" class="form-label">Name</label>
+            <input type="text" id="api_name" class="form-control" aria-describedby="describer">
+            <div id="describer" class="form-text">
+              Enter a name to identify api key by a tag.
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" type="button" onclick="createApiKey()">Create</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="copyKey" tabindex="-1" aria-labelledby="copyKeyLabel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="copyKeyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="copyKeyLabel">Copy Key</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="apiKey" class="form-control" value="Generated API Key will appear here" readonly>
+            <div id="describer" class="form-text">
+                Store it some where safe after you copy it, You will not be able to access it again.
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" type="button" onclick="copyKey()">Copy</button>
+        </div>
+      </div>
+    </div>
+</div>
+  
+{% endblock content %}
+
+
+{% block custom_js %}
+
+<script>
+const createApiKey = async () => {
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    const name = document.getElementById('api_name');
+    try {
+        const response = await fetch('{% url "accounts_api:create_api_key" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                name: name.value 
+            })
+        });
+
+        if (!response.ok) {
+            showToast(`HTTP error! Status: ${response.status}`, "error");
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        document.getElementById('apiKey').value = data.api_key;
+        hideModal('GenKey');
+        showToast("API Key created successfully", "success");
+        const modal = new bootstrap.Modal(document.getElementById('copyKey'));
+        modal.show();
+        // console.log('API Key created successfully:', data);
+        return data;
+    } catch (error) {
+        showToast("Error creating API key", "error");
+        // console.error('Error creating API key:', error);
+    }
+};
+
+const copyKey = () => {
+    const apiKeyInput = document.getElementById('apiKey');
+    navigator.clipboard.writeText(apiKeyInput.value).then(() => {
+        showToast("API Key copied to clipboard!", "success");
+        setTimeout(() => {
+        location.reload();
+        }, 3000);
+
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+  };
+
+const hideModal = (id) => {
+  const modalElement = document.getElementById(id);
+  const modalInstance = bootstrap.Modal.getInstance(modalElement);
+  if (modalInstance) {
+    modalInstance.hide();
+  }
+};
+
+</script>   
+{% endblock custom_js %}
+    
+    
