@@ -32,10 +32,9 @@ This project is a Django-based application that provides APIs for interacting wi
 
 1. [Installation](#installation)
 2. [Directory Structure](#directory-structure)
-3. [Endpoints](#endpoints)
 4. [Usage](#usage)
 5. [Contribution](#contribution)
-6. [License](#license)
+6. [Steps to Run Tests](#steps-to-run-tests)
 
 ---
 
